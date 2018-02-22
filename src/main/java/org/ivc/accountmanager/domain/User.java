@@ -1,0 +1,358 @@
+/*
+ Информационно-вычислительный центр  
+ */
+package org.ivc.accountmanager.domain;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import javax.naming.Name;
+import javax.validation.groups.Default;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
+import org.ivc.accountmanager.config.PrefixShaPasswordEncoder;
+import org.springframework.ldap.odm.annotations.Attribute;
+import org.springframework.ldap.odm.annotations.DnAttribute;
+import org.springframework.ldap.odm.annotations.Entry;
+import org.springframework.ldap.odm.annotations.Id;
+import org.springframework.ldap.odm.annotations.Transient;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+/**
+ * User class.
+ *
+ * @author Sokolov@ivc.org
+ */
+@Entry(objectClasses = {"organizationalPerson", "person", "inetOrgPerson", "top"},
+        base = User.BASE_DN)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User implements UserDetails {
+
+    //-------------------InnerClasses---------------------------------------------
+    public interface IdGroup extends Default {
+    }
+    public interface PairLoginPassword extends Default{
+    }
+    //-------------------Logger---------------------------------------------------
+    //-------------------Constants------------------------------------------------
+    @JsonIgnore
+    public static final String BASE_DN = "ou=users";
+
+    public static final int MAX_USERID_LENGTH = 64;
+    public static final int MAX_COMMON_NAME_LENGTH = 128;
+    public static final int MAX_SHORT_NAME_LENGTH = 64;
+    public static final String COMMON_NAME_PROPERTY = "commonName";
+    public static final String SHORT_NAME_PROPERTY = "shortName";
+    public static final String ORGANIZATION_NAME_PROPERTY = "organizationName";
+    public static final String ACTIVE_PROPERTY = "isActive";
+    public static final String JSON_UID_PROPERTY = "login";
+    public static final String UID_PROPERTY = "id";
+    public static final String PASSWORD_PROPERTY = "password";
+    public static final String ROLE_PROPERTY = "role";
+    public static final String UID_ATTRIBUTE = "uid";
+    public static final String USER_PASSWORD_ATTRIBUTE = "userPassword";
+    public static final String CN_ATTRIBUTE = "cn";
+    public static final String SN_ATTRIBUTE = "sn";
+    public static final String O_ATTRIBUTE = "o";
+    public static final String TITLE_ATTRIBUTE = "title";
+
+    private static final PrefixShaPasswordEncoder encoder
+            = new PrefixShaPasswordEncoder(256);
+
+    static {
+        encoder.setEncodeHashAsBase64(true);
+    }
+
+    //-------------------Fields---------------------------------------------------
+    @Id
+    @JsonIgnore
+    private Name dn;
+
+    @Attribute(name = UID_ATTRIBUTE)
+    @DnAttribute(value = UID_ATTRIBUTE, index = 1)
+    @JsonProperty(JSON_UID_PROPERTY)
+    @NotBlank(message = "{blank.field}",
+            groups = {IdGroup.class, Default.class})
+    @Length(max = MAX_USERID_LENGTH, message = "{length.field}",
+            groups = {IdGroup.class, Default.class})
+    private String id;
+    @Password(message = "{blank.field}",
+            groups = {PairLoginPassword.class, Default.class})
+    @Attribute(name = USER_PASSWORD_ATTRIBUTE, type = Attribute.Type.BINARY)
+    private byte[] password;
+
+    @Attribute(name = CN_ATTRIBUTE)
+    @JsonProperty(COMMON_NAME_PROPERTY)
+    @NotBlank(message = "{blank.field}")
+    @Length(max = MAX_COMMON_NAME_LENGTH, message = "{length.field}")
+    private String commonName;
+
+    @Attribute(name = SN_ATTRIBUTE)
+    @JsonProperty(SHORT_NAME_PROPERTY)
+    @NotBlank(message = "{blank.field}")
+    @Length(max = MAX_SHORT_NAME_LENGTH, message = "{length.field}")
+    private String shortName;
+
+    @Attribute(name = O_ATTRIBUTE)
+    @JsonProperty(ORGANIZATION_NAME_PROPERTY)
+    @NotBlank(message = "{blank.field}")
+    @Length(max = Organization.MAX_NAME_LENGTH, message = "{length.field}")
+    private String organizationName;
+
+    @Attribute(name = TITLE_ATTRIBUTE)
+    @JsonProperty(ACTIVE_PROPERTY)
+    @NotBlank(message = "{blank.field}")
+    private String active;
+
+    @Transient
+    @JsonProperty(ROLE_PROPERTY)
+    private String role;
+
+    //-------------------Constructors---------------------------------------------
+    /**
+     * Creates a user object.
+     */
+    public User() {
+    }
+
+    /**
+     * Creates a user object.
+     *
+     * @param userId the id of user
+     * @param password the password of user
+     * @param commonName the common name of user
+     * @param shortName the short name of user
+     * @param organizationName the user's organization
+     * @param active the user's activity status.
+     */
+    public User(String userId, String password, String commonName,
+            String shortName, String organizationName, boolean active) {
+        this.id = userId;
+        this.password = encoder.encodePassword(password, null).getBytes(StandardCharsets.UTF_8);
+        this.commonName = commonName;
+        this.shortName = shortName;
+        this.organizationName = organizationName;
+        this.active = Boolean.toString(active);
+        this.role = "";
+    }
+
+    //-------------------Getters and setters--------------------------------------
+    /**
+     * Returns the distinguished name.
+     *
+     * @return the distinguished name.
+     */
+    public Name getDn() {
+        return dn;
+    }
+
+    /**
+     * Sets the distinguished name.
+     *
+     * @param dn the distinguished name.
+     */
+    public void setDn(Name dn) {
+        this.dn = dn;
+    }
+
+    /**
+     * Returns the user's id.
+     *
+     * @return id of the user.
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the user's id.
+     *
+     * @param id setting id of the user.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Returns the user's password.
+     *
+     * @return password of the user.
+     */
+    @JsonIgnore
+    @Override
+    public String getPassword() {
+        return new String(password);
+    }
+
+    /**
+     * Sets user's password.
+     *
+     * @param password Setting user's password.
+     */
+    @JsonProperty(PASSWORD_PROPERTY)
+    public void setPassword(String password) {
+        this.password = encoder.encodePassword(password, null)
+                .getBytes(Charset.forName("UTF-8"));
+    }
+
+    /**
+     * Sets user's password's hash.
+     *
+     * @param password Setting password's hash.
+     */
+    public void setPasswordWithoutEncoding(String password) {
+        this.password = (password == null)
+                ? null : password.getBytes(Charset.forName("UTF-8"));
+    }
+
+    /**
+     * Returns user's common name.
+     *
+     * @return user's common name.
+     */
+    public String getCommonName() {
+        return commonName;
+    }
+
+    /**
+     * Sets user's common name
+     *
+     * @param commonName user's common name.
+     */
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    /**
+     * Returns user's short name.
+     *
+     * @return user's short name.
+     */
+    public String getShortName() {
+        return shortName;
+    }
+
+    /**
+     * Sets user's short name
+     *
+     * @param shortName user's short name.
+     */
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    /**
+     * Returns name of the user's organization.
+     *
+     * @return organization name.
+     */
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    /**
+     * Sets name of the user's organization.
+     *
+     * @param organizationName organization name.
+     */
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    /**
+     * Returns string, which tells about user's activity.
+     *
+     * @return user's activity.
+     */
+    public boolean isActive() {
+        return Boolean.valueOf(active);
+    }
+
+    /**
+     * Sets string, which tells about user's activity.
+     *
+     * @param active user's activity.
+     */
+    public void setActive(boolean active) {
+        this.active = Boolean.toString(active);
+    }
+
+    /**
+     * Returns user's role.
+     *
+     * @return user's role.
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     * Sets user's role.
+     *
+     * @param role user's role.
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, "dn");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, "dn");
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> list = new LinkedList<>();
+        list.add(new SimpleGrantedAuthority(role));
+        return list;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return id;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+}

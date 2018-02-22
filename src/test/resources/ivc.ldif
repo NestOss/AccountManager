@@ -1,0 +1,110 @@
+version: 1
+
+dn: ou=groups,o=ivc
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=organizations,o=ivc
+objectClass: organizationalUnit
+objectClass: top
+ou: organizations
+
+dn: ou=users,o=ivc
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: cn=USER,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: user
+member: uid=vbhdhd,dhdou=useghds,o=ivcghghdfgh
+member: uid=222,ou=users,o=ivc
+ou: user
+
+dn: uid=000,ou=users,o=ivc
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Roman Osipov
+sn: Roman
+o: TestOrganization2
+title: true
+uid: 000
+userPassword:: e3NoYTI1Nn1Lc21tZEdyS1ZEcjQzL09ZbE0vb0Z6cjdvaDZ3SEcrdU05VXBSe
+ UlvVmU4PQ==
+
+dn: uid=222,ou=users,o=ivc
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Vitaliy Denisov
+sn: Vitaliy
+o: TestOrganization1
+title: TRUE
+uid: 222
+userPassword:: e3NoYTI1Nn1tNGNWRWpKOENjNlIzV1NiUDVhbU8zUUk3eVo4ak1WeEFSVG1LW
+ E1NdGg4PQ==
+
+dn: cn=ROCKETADMIN,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: ROCKETADMIN
+member: uid=111,ou=users,o=ivc
+member: uid=222,ou=users,o=ivc
+ou: ROCKETADMIN
+
+dn: cn=ROCKETUSER,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: ROCKETUSER
+member: uid=vbhdhd,dhdou=useghds,o=ivcghghdfgh
+ou: ROCKETUSER
+
+dn: cn=ADMIN,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: ADMIN
+member: uid=000,ou=users,o=ivc
+ou: ADMIN
+
+dn: cn=SENSORUSER,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: SENSORUSER
+member: uidghd=111,odfghu=users,o=ivc
+ou: SENSORUSER
+
+dn: cn=SENSORADMIN,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: SENSORADMIN
+member: uidgfhd=111,ofdghu=users,o=ivc
+ou: SENSORADMIN
+
+dn: uid=111,ou=users,o=ivc
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Slava Sokolov
+sn: Slava
+o: TestOrganization1
+title: TRUE
+uid: 111
+userPassword:: e3NoYTI1Nn05dUNoNHF4QmxGcWFwLytLaXFvTTY4RXFPOHlZR3BLYTFjK0JDZ
+ 2tPRWE0PQ==
+
+dn: o=TestOrganization2,ou=organizations,o=ivc
+objectclass: organization
+objectclass: top
+o: TestOrganization2
+
+dn: o=TestOrganization1,ou=organizations,o=ivc
+objectClass: organization
+objectClass: top
+o: TestOrganization1
+

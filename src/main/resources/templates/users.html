@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" ng-app="myApp">
+    <head>
+        <title th:text="#{users.list}">Users list</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/lib/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/lib/smoke.min.css}"/>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/app.css}"/>
+        <script th:src="@{/js/lib/angular.min.1.4.9.js}"></script>
+        <script th:src="@{/js/lib/jquery-1.12.0.min.js}"></script>
+        <script th:src="@{/js/lib/jquery-ui.min.js}"></script>
+        <script th:src="@{/js/lib/smoke.min.js}"></script>
+        <script th:src="@{/js/lib/es.min.js}"></script>
+        <script th:src="@{/js/lib/bootstrap.min.js}"></script>
+    </head>
+    <body class="ng-cloak">
+        <script th:inline = "javascript">
+            $(function() {
+
+            var password = $("#changedPass"),
+                    confirmPass = $("#changedConfirm");
+                    $("#dialog-confirm").dialog({
+            autoOpen: false,
+                    resizable: false,
+                    height:160,
+                    modal: true,
+                    buttons: {
+                    [[#{remove}]]: function() {
+                    var scope = angular.element($("[ng-controller='UserController as ctrl']")).scope();
+                            console.log(scope);
+                            scope.$apply(function () {
+                            scope.ctrl.removeCurUser();
+                            });
+                            $(this).dialog("close");
+                    },
+                            [[#{cancel}]]: function() {
+                    $(this).dialog("close");
+                    }
+                    }
+            })
+
+                    $("#dialog-change").dialog({
+            autoOpen: false,
+                    resizable: false,
+                    height:300,
+                    width:450,
+                    modal: true,
+                    buttons: {
+                    [[#{change}]]: function() {
+                    var scope = angular.element($("[ng-controller='UserController as ctrl']")).scope();
+                            console.log(scope);
+                            if (password.val() == confirmPass.val()){
+                    scope.$apply(function () {
+                    scope.ctrl.changePassword(password.val());
+                    });
+                            password.val('');
+                            confirmPass.val('');
+                            $(this).dialog("close"); }
+                    else{
+                    alert('Invalid password');
+                    }
+                    },
+                            [[#{cancel}]]: function() {
+                    $(this).dialog("close");
+                    }
+                    }
+            })
+
+                    $("#accordion").accordion();
+            });</script>
+
+        <!-- Dialogs -->
+        <div id="dialog-confirm" 
+             th:attr="title=#{remove.user}">
+            <p th:text="#{user.permanently.remove.prompt}">
+                <span class="ui-icon ui-icon-alert" 
+                      style="float:left; margin:0 7px 20px 0;"></span>
+                These items will be permanently deleted and cannot be recovered. Are you sure?
+            </p>
+        </div>
+
+        <div id="dialog-change" 
+             th:attr="title=#{changepass}">
+            <p th:text="#{user.permanently.changepass.prompt}">
+                <span class="ui-icon ui-icon-alert" 
+                      style="float:left; margin:0 7px 20px 0;"></span>
+                Enter and confirm new password.
+            </p>
+            <fieldset>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="loginChange" th:text="#{user.login}" class="col-md-4 control-lable">Login</label>
+                        <div class="col-md-8">
+                            <input type="text" name="changedLogin" id="changedLogin"  
+                                   disabled="true"
+                                   class="fieldname form-control input-sm"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="changedPass" th:text="#{user.password}" class="col-md-4 control-lable">Password</label>
+                        <div class="col-md-8">
+                            <input type="password" name="changedPass" id="changedPass" 
+                                   class="fieldname form-control input-sm"
+                                   th:attr="placeholder=#{user.password.input.prompt}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="changedConfirm" th:text="#{user.confirm}" class="col-md-4 control-lable">Confirm password</label>
+                        <div class="col-md-8">
+                            <input type="password" name="changedConfirm" id="changedConfirm"  
+                                   class="fieldname form-control input-sm"
+                                   th:attr="placeholder=#{user.password.input.prompt}"/>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="generic-container" ng-controller="UserController as ctrl">
+            <div style="float: right;">
+                <span th:text="#{user}">User</span>
+                <span sec:authentication="name">Username</span>
+                <form th:action="@{/logout}" method="post" style="display: inline">
+                    <input id = "logout" type="submit" class="submitLink"
+                           th:attr="value=#{exit}"/>
+                </form>
+            </div>
+            <!-- Form panel -->
+            <div class="panel panel-default">
+                <div id="header" class="panel-heading" ng-click="ctrl.showHide()" >
+                    <div class="row">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: auto">
+                                        <span id = "icon" class="ui-icon ui-icon-triangle-1-s"/>
+                                    </td>
+                                    <td>
+                                        <span class="lead" th:text="#{user.registration.form}">User Registration Form</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="formcontainer" id="editform"> 
+                    <form ng-submit="ctrl.submit()" name="myForm" class="form-horizontal">
+                        <!-- User name form field -->
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="login" th:text="#{user.login}">Login</label>
+                                <div class="col-md-7">
+                                    <input type="text" ng-model="ctrl.user.login" 
+                                           id="login"
+                                           name="login"
+                                           class="fieldname form-control input-sm"
+                                           th:attr="placeholder=#{user.login.input.prompt}"
+                                           required="true" ng-minlength="3"
+                                           ng-disabled="ctrl.user.id"/>
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.login.$error.required">This is a required field</span>
+                                        <span ng-show="myForm.login.$error.minlength">Minimum length required is 3</span>
+                                        <span ng-show="myForm.login.$invalid">This field is invalid </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="name" th:text="#{user.name}">Name</label>
+                                <div class="col-md-7">
+                                    <input type="text" ng-model="ctrl.user.name" 
+                                           id="name"
+                                           name="name"
+                                           class="fieldname form-control input-sm"
+                                           th:attr="placeholder=#{user.name.input.prompt}"
+                                           required="true" ng-minlength="3"/>
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.name.$error.required">This is a required field</span>
+                                        <span ng-show="myForm.name.$error.minlength">Minimum length required is 3</span>
+                                        <span ng-show="myForm.name.$invalid">This field is invalid </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="lastname" th:text="#{user.lastname}">Lastname</label>
+                                <div class="col-md-7">
+                                    <input type="text" ng-model="ctrl.user.lastname" 
+                                           id="lastname"
+                                           name="lastname"
+                                           class="fieldname form-control input-sm"
+                                           th:attr="placeholder=#{user.lastname.input.prompt}"
+                                           required="true" ng-minlength="3"/>
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.lastname.$error.required">This is a required field</span>
+                                        <span ng-show="myForm.lastname.$error.minlength">Minimum length required is 3</span>
+                                        <span ng-show="myForm.lastname.$invalid">This field is invalid </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="orgname" th:text="#{user.organization}">Organization</label>
+                                <div class="col-md-7" ng-controller="OrganizationController as orgctrl">
+                                    <select ng-model="ctrl.user.orgname" 
+                                            id="orgname"
+                                            name="orgname"
+                                            required="true">
+                                        <!--ng-options = "org as org.name for org in orgctrl.organizations track by org.name"-->
+                                        <option ng-repeat="org in orgctrl.organizations" value="{{org.name}}">{{org.name}}</option>
+                                    </select> 
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.orgname.$error.required">This is a required field</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="role" th:text="#{user.role}">Role</label>
+                                <div class="col-md-7">
+                                    <select ng-model="ctrl.user.role" 
+                                            id="role"
+                                            name="role"
+                                            required="true">
+                                        <option value="ADMIN">ADMIN</option>
+                                        <option value="ROCKETADMIN">ROCKETADMIN</option>
+                                        <option value="SENSORADMIN">SENSORADMIN</option>
+                                        <option value="ROCKETUSER">ROCKETUSER</option>
+                                        <option value="SENSORUSER">SENSORUSER</option>
+                                        <option value="USER">USER</option>
+                                    </select> 
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.role.$error.required">This is a required field</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="!ctrl.user.id">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="login" th:text="#{user.password}">Password</label>
+                                <div class="col-md-7">
+                                    <input type="password" ng-model="ctrl.user.password" 
+                                           id="password"
+                                           name="password"
+                                           class="fieldname form-control input-sm"
+                                           th:attr="placeholder=#{user.password.input.prompt}"
+                                           required="true" ng-minlength="3"/>
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.password.$error.required">This is a required field</span>
+                                        <span ng-show="myForm.password.$error.minlength">Minimum length required is 3</span>
+                                        <span ng-show="myForm.password.$invalid">This field is invalid </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="!ctrl.user.id">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="login" th:text="#{user.confirm}">Confirm password</label>
+                                <div class="col-md-7">
+                                    <input type="password" ng-model="ctrl.user.confirm" compare-to="ctrl.user.password"
+                                           id="confirm"
+                                           name="confirm"
+                                           class="fieldname form-control input-sm"
+                                           th:attr="placeholder=#{user.confirm.input.prompt}"
+                                           required="true" ng-minlength="3"/>
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.confirm.$error.required">This is a required field</span>
+                                        <span ng-show="myForm.confirm.$error.minlength">Minimum length required is 3</span>
+                                        <span ng-show="myForm.confirm.$invalid">This field is invalid </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-lable" for="active" th:text="#{user.active}">Active</label>
+                                <div class="col-md-2">
+                                    <input type="checkbox" ng-model="ctrl.user.active" 
+                                           id="active"
+                                           name="active"/>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Form buttons -->
+                        <div class="row">
+                            <div class="form-actions floatRight">
+                                <input id="sendFormButton"
+                                       type="submit"
+                                       th:attr="value='{{!ctrl.user.id ? &quot;' + #{create} + '&quot; : &quot;' + #{update} + '&quot;}}'"
+                                       class="btn btn-primary btn-sm" ng-disabled="myForm.$invalid"/>
+                                <button type="button" ng-click="ctrl.reset()" 
+                                        class="btn btn-warning btn-sm"
+                                        ng-disabled="myForm.$pristine"
+                                        th:text="#{reset}">Reset Form</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="lead"
+                          th:text="#{users.searchtitle}">Search</span>
+                </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style="padding: auto">
+                                <div class="row" style="padding: auto">
+                                    <div class="form-group col-md-12">
+                                        <label class="col-md-12 control-lable" for="loginsearch" th:text="#{user.loginsearch}">Search by login:</label>
+                                        <div class="col-md-12">
+                                            <input type="text" ng-model="query.login" 
+                                                   id="loginsearch"
+                                                   name="loginsearch"
+                                                   class="form-control"
+                                                   th:attr="placeholder=#{user.login.input.prompt}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: auto">
+                                <div class="row">
+                                    <div class="form-group col-md-12">
+                                        <label class="col-md-12 control-lable" for="namesearch" th:text="#{user.namesearch}">Search by name:</label>
+                                        <div class="col-md-12">
+                                            <input type="text" ng-model="query.commonName" 
+                                                   id="namesearch"
+                                                   name="namesearch"
+                                                   class="form-control"
+                                                   th:attr="placeholder=#{user.name.input.prompt}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: auto">
+                                <div class="row">
+                                    <div class="form-group col-md-12">
+                                        <label class="col-md-12 control-lable" for="organizationsearch" th:text="#{user.organizationsearch}">Search by organization:</label>
+                                        <div class="col-md-12">
+                                            <input type="text" ng-model="query.organizationName" 
+                                                   id="organizationsearch"
+                                                   name="organizationsearch"
+                                                   class="form-control"
+                                                   th:attr="placeholder=#{user.org.input.prompt}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: auto">
+                                <div class="row">                   
+                                    <div class="form-group col-md-12">
+                                        <label class="col-md-12 control-lable" for="rolesearch" th:text="#{user.rolesearch}">Search by role:</label>
+                                        <div class="col-md-12">
+                                            <input type="text" ng-model="query.role" 
+                                                   id="rolesearch"
+                                                   name="rolesearch"
+                                                   class="form-control"
+                                                   th:attr="placeholder=#{user.role.input.prompt}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel panel-default">
+                <!-- List of items -->
+                <div class="panel-heading">
+                    <span class="lead"
+                          th:text="#{users.list}">List of Users </span>
+                </div>
+                <div class="tablecontainer">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                        <div class="form-group col-md-12">
+                            <button type="button" ng-click="ctrl.prevPage(5)" ng-show="ctrl.pagePanel.prevN" 
+                                    class="btn btn-primary">&lt;&lt;</button> 
+                            <button type="button" ng-click="ctrl.firstPage()" ng-show="ctrl.pagePanel.first"
+                                    class="btn btn-primary">1</button>
+                            <label ng-show="ctrl.pagePanel.prevLabel">...</label>
+                            <button type="button" ng-click="ctrl.prevPage(1)" ng-show="ctrl.pagePanel.prev" 
+                                    class="btn btn-primary">{{ctrl.currentPage}}</button> 
+                            <button type="button" class="btn btn-danger">{{ctrl.currentPage + 1}}</button>
+                            <button type="button" ng-click="ctrl.nextPage(1)" ng-show="ctrl.pagePanel.next" 
+                                    class="btn btn-primary">{{ctrl.currentPage + 2}}</button> 
+                            <label ng-show="ctrl.pagePanel.nextLabel">...</label>
+                            <button type="button" ng-click="ctrl.lastPage()" ng-show="ctrl.pagePanel.last"
+                                    class="btn btn-primary">{{ctrl.numberOfPages()}}</button>
+                            <button type="button" ng-click="ctrl.nextPage(5)" ng-show="ctrl.pagePanel.nextN" 
+                                    class="btn btn-primary">&gt;&gt;</button> 
+                        </div>
+                        </th>
+                        </tr>
+                        <tr>
+                            <th class="item"
+                                th:text="#{user.login}"
+                                ng-click="ctrl.changeOrder('login')"> 
+                                Login
+                            </th>
+                            <th class="item"
+                                th:text="#{user.name}"
+                                ng-click="ctrl.changeOrder('commonName')">
+                                Name
+                            </th>
+                            <th class="item"
+                                th:text="#{user.organization}"
+                                ng-click="ctrl.changeOrder('organizationName')">
+                                Organization Name
+                            </th>
+                            <th class="item"
+                                th:text="#{user.role}"
+                                ng-click="ctrl.changeOrder('role')">
+                                Role
+                            </th>
+                            <th class="item"
+                                th:text="#{user.active}"
+                                ng-click="ctrl.changeOrder('isActive')">
+                                Active
+                            </th>
+                            <th width="30%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in ctrl.users| filter: query | orderBy:ctrl.orderProp | startFrom:ctrl.currentPage * ctrl.pageSize | limitTo:ctrl.pageSize">
+                                <td><span ng-bind ="user.login"></span></td>
+                                <td><span ng-bind="user.commonName"></span></td>
+                                <td><span ng-bind="user.organizationName"></span></td>
+                                <td><span ng-bind="user.role"></span></td>
+                                <td><input ng-model="user.isActive" type = "checkbox" disabled="false"/></td>
+                                <td>
+                                    <button type="button" ng-click="ctrl.edit(user)" 
+                                            class="btn btn-success custom-width"
+                                            style=" width: 120px !important;"
+                                            th:text="#{edit}">Edit</button> 
+                                    <button type="button" 
+                                            ng-click = "ctrl.showChangePasswordDialog(user.login)"
+                                            class="btn btn-warning custom-width" 
+                                            style=" width: 140px !important;"
+                                            th:text="#{editpass}">Change Password</button>
+                                    <button type="button" 
+                                            ng-click = "ctrl.showConfirmDialogThenDelete(user.login)"
+                                            class="btn btn-danger custom-width"                                           
+                                            th:text="#{remove}">Remove</button> 
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script th:src="@{/js/app.js}"></script>
+        <script th:src="@{/js/header.js}"></script>
+        <script th:src="@{/js/user/service.js}"></script>
+        <script th:src="@{/js/user/controller.js}"></script>
+        <script th:src="@{/js/organization/service.js}"></script>
+        <script th:src="@{/js/organization/controller.js}"></script>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/lib/jquery-ui.css}"/>
+    </body>
+</html>

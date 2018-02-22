@@ -1,0 +1,166 @@
+version: 1
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:43.875
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 92     Add Request : Entry     dn[n]: ou=groups,o=ivc     objectClass: top     objectClass: organizationalUnit     ou: groups : ERR_268 Cannot find a partition for ou=groups,o=ivc]
+dn: ou=groups,o=ivc
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:43.906
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 93     Add Request : Entry     dn[n]: ou=organizations,o=ivc     objectClass: organizationalUnit     objectClass: top     ou: organizations : ERR_268 Cannot find a partition for ou=organizations,o=ivc]
+dn: ou=organizations,o=ivc
+objectClass: organizationalUnit
+objectClass: top
+ou: organizations
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:43.937
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 94     Add Request : Entry     dn[n]: ou=users,o=ivc     objectClass: organizationalUnit     objectClass: top     ou: users : ERR_268 Cannot find a partition for ou=users,o=ivc]
+dn: ou=users,o=ivc
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:43.968
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 95     Add Request : Entry     dn[n]: cn=USER,ou=groups,o=ivc     objectClass: groupOfNames     objectClass: top     member: uid=vbhdhd,dhdou=useghds,o=ivcghghdfgh     member: uid=222,ou=users,o=ivc     ou: user     cn: user : ERR_268 Cannot find a partition for cn=USER,ou=groups,o=ivc]
+dn: cn=USER,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: user
+member: uid=vbhdhd,dhdou=useghds,o=ivcghghdfgh
+member: uid=222,ou=users,o=ivc
+ou: user
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.000
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 96     Add Request : Entry     dn[n]: uid=000,ou=users,o=ivc     objectClass: organizationalPerson     objectClass: person     objectClass: inetOrgPerson     objectClass: top     uid: 000     userPassword: 0x7B 0x73 0x68 0x61 0x32 0x35 0x36 0x7D 0x4B 0x73 0x6D 0x6D 0x64 0x47 0x72 0x4B ...     title: true     sn: Roman     cn: Roman Osipov     o: TestOrganization2 : ERR_268 Cannot find a partition for uid=000,ou=users,o=ivc]
+dn: uid=000,ou=users,o=ivc
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Roman Osipov
+sn: Roman
+o: TestOrganization2
+title: true
+uid: 000
+userPassword:: e3NoYTI1Nn1Lc21tZEdyS1ZEcjQzL09ZbE0vb0Z6cjdvaDZ3SEcrdU05VXBSe
+ UlvVmU4PQ==
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.031
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 97     Add Request : Entry     dn[n]: uid=222,ou=users,o=ivc     objectClass: organizationalPerson     objectClass: person     objectClass: inetOrgPerson     objectClass: top     uid: 222     userPassword: 0x7B 0x73 0x68 0x61 0x32 0x35 0x36 0x7D 0x6D 0x34 0x63 0x56 0x45 0x6A 0x4A 0x38 ...     title: TRUE     sn: Vitaliy     cn: Vitaliy Denisov     o: TestOrganization1 : ERR_268 Cannot find a partition for uid=222,ou=users,o=ivc]
+dn: uid=222,ou=users,o=ivc
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Vitaliy Denisov
+sn: Vitaliy
+o: TestOrganization1
+title: TRUE
+uid: 222
+userPassword:: e3NoYTI1Nn1tNGNWRWpKOENjNlIzV1NiUDVhbU8zUUk3eVo4ak1WeEFSVG1LW
+ E1NdGg4PQ==
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.062
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 98     Add Request : Entry     dn[n]: cn=ROCKETADMIN,ou=groups,o=ivc     objectClass: groupOfNames     objectClass: top     member: uid=111,ou=users,o=ivc     member: uid=222,ou=users,o=ivc     ou: ROCKETADMIN     cn: ROCKETADMIN : ERR_268 Cannot find a partition for cn=ROCKETADMIN,ou=groups,o=ivc]
+dn: cn=ROCKETADMIN,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: ROCKETADMIN
+member: uid=111,ou=users,o=ivc
+member: uid=222,ou=users,o=ivc
+ou: ROCKETADMIN
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.078
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 99     Add Request : Entry     dn[n]: cn=ROCKETUSER,ou=groups,o=ivc     objectClass: groupOfNames     objectClass: top     member: uid=vbhdhd,dhdou=useghds,o=ivcghghdfgh     ou: ROCKETUSER     cn: ROCKETUSER : ERR_268 Cannot find a partition for cn=ROCKETUSER,ou=groups,o=ivc]
+dn: cn=ROCKETUSER,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: ROCKETUSER
+member: uid=vbhdhd,dhdou=useghds,o=ivcghghdfgh
+ou: ROCKETUSER
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.093
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 100     Add Request : Entry     dn[n]: cn=ADMIN,ou=groups,o=ivc     objectClass: groupOfNames     objectClass: top     member: uid=000,ou=users,o=ivc     ou: ADMIN     cn: ADMIN : ERR_268 Cannot find a partition for cn=ADMIN,ou=groups,o=ivc]
+dn: cn=ADMIN,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: ADMIN
+member: uid=000,ou=users,o=ivc
+ou: ADMIN
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.109
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 101     Add Request : Entry     dn[n]: cn=SENSORUSER,ou=groups,o=ivc     objectClass: groupOfNames     objectClass: top     member: uidghd=111,odfghu=users,o=ivc     ou: SENSORUSER     cn: SENSORUSER : ERR_268 Cannot find a partition for cn=SENSORUSER,ou=groups,o=ivc]
+dn: cn=SENSORUSER,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: SENSORUSER
+member: uidghd=111,odfghu=users,o=ivc
+ou: SENSORUSER
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.125
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 102     Add Request : Entry     dn[n]: cn=SENSORADMIN,ou=groups,o=ivc     objectClass: groupOfNames     objectClass: top     member: uidgfhd=111,ofdghu=users,o=ivc     ou: SENSORADMIN     cn: SENSORADMIN : ERR_268 Cannot find a partition for cn=SENSORADMIN,ou=groups,o=ivc]
+dn: cn=SENSORADMIN,ou=groups,o=ivc
+objectClass: groupOfNames
+objectClass: top
+cn: SENSORADMIN
+member: uidgfhd=111,ofdghu=users,o=ivc
+ou: SENSORADMIN
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.140
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 103     Add Request : Entry     dn[n]: uid=111,ou=users,o=ivc     objectClass: organizationalPerson     objectClass: person     objectClass: inetOrgPerson     objectClass: top     uid: 111     userPassword: 0x7B 0x73 0x68 0x61 0x32 0x35 0x36 0x7D 0x39 0x75 0x43 0x68 0x34 0x71 0x78 0x42 ...     title: TRUE     sn: Slava     cn: Slava Sokolov     o: TestOrganization1 : ERR_268 Cannot find a partition for uid=111,ou=users,o=ivc]
+dn: uid=111,ou=users,o=ivc
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Slava Sokolov
+sn: Slava
+o: TestOrganization1
+title: TRUE
+uid: 111
+userPassword:: e3NoYTI1Nn05dUNoNHF4QmxGcWFwLytLaXFvTTY4RXFPOHlZR3BLYTFjK0JDZ
+ 2tPRWE0PQ==
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.156
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 104     Add Request : Entry     dn[n]: o=TestOrganization2,ou=organizations,o=ivc     objectclass: organization     objectclass: top     o: TestOrganization2 : ERR_268 Cannot find a partition for o=TestOrganization2,ou=organizations,o=ivc]
+dn: o=TestOrganization2,ou=organizations,o=ivc
+objectclass: organization
+objectclass: top
+o: TestOrganization2
+
+#!RESULT ERROR
+#!CONNECTION ldap://localhost:10389
+#!DATE 2018-02-23T02:52:44.171
+#!ERROR [LDAP: error code 32 - NO_SUCH_OBJECT: failed for MessageType : ADD_REQUEST Message ID : 105     Add Request : Entry     dn[n]: o=TestOrganization1,ou=organizations,o=ivc     objectClass: organization     objectClass: top     o: TestOrganization1 : ERR_268 Cannot find a partition for o=TestOrganization1,ou=organizations,o=ivc]
+dn: o=TestOrganization1,ou=organizations,o=ivc
+objectClass: organization
+objectClass: top
+o: TestOrganization1
+

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" ng-app="myApp">
+    <head>
+        <title th:text="#{organizations.list}">Organizations list</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/lib/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/lib/smoke.min.css}"/>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/app.css}"/>
+        <script th:src="@{/js/lib/angular.min.1.4.9.js}"></script>
+        <script th:src="@{/js/lib/jquery-1.12.0.min.js}"></script>
+        <script th:src="@{/js/lib/jquery-ui.min.js}"></script>
+        <script th:src="@{/js/lib/smoke.min.js}"></script>
+        <script th:src="@{/js/lib/es.min.js}"></script>
+        <script th:src="@{/js/lib/bootstrap.min.js}"></script>
+    </head>
+    <body class="ng-cloak">
+        <script th:inline = "javascript">
+            $(function() {
+                $("#dialog-confirm").dialog(
+                  { autoOpen: false,
+                    resizable: false,
+                    height: 160,
+                    modal: true,
+                    buttons: 
+                      { [[#{remove}]]: function() {
+                            var scope = angular.element($("[ng-controller='OrganizationController as ctrl']")).scope();
+                            scope.$apply(function () {
+                                scope.ctrl.removeCurOrg();
+                            });
+                            $(this).dialog("close");
+                        },
+                        [[#{cancel}]]: function() {
+                            $(this).dialog("close");
+                        }
+                      }
+                  }
+                )
+            });
+        </script>
+        <div id="dialog-confirm" 
+             th:attr="title=#{remove.organization}">
+            <p th:text="#{organization.permanently.remove.prompt}">
+                <span class="ui-icon ui-icon-alert" 
+                      style="float:left; margin:0 7px 20px 0;"></span>
+                These items will be permanently deleted and cannot be recovered. Are you sure?
+            </p>
+        </div>
+        <div class="generic-container" ng-controller="OrganizationController as ctrl">
+            <div style="float: right;">
+                <span th:text="#{user}">User</span>
+                <span sec:authentication="name">Username</span>
+                <form th:action="@{/logout}" method="post" style="display: inline">
+                    <input type="submit" class="submitLink"
+                           th:attr="value=#{exit}"/>
+                </form>
+            </div>    
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="lead" th:text="#{organization.registration.form}">Organization Registration Form</span></div>
+                <div class="formcontainer">
+                    <form ng-submit="ctrl.submit()" name="myForm" class="form-horizontal">
+                        <!-- Organization name form field -->
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-md-2 control-label" for="orgname" th:text="#{name}">Name</label>
+                                <div class="col-md-7">
+                                    <input type="text" ng-model="ctrl.organization.name" 
+                                           id="orgname"
+                                           name="orgname"
+                                           class="fieldname form-control input-sm"
+                                           th:attr="placeholder=#{organization.name.input.prompt}"
+                                           required="true" ng-minlength="3" ng-maxlength="256"/>
+                                    <div class="has-error" ng-show="myForm.$dirty">
+                                        <span ng-show="myForm.orgname.$error.required"
+                                              th:text="#{field.required}">This is a required field</span>
+                                        <span ng-show="myForm.orgname.$error.minlength"
+                                              th:text="#{field.minlength(3)}">Minimum length required is 3</span>
+                                        <span ng-show="myForm.orgname.$error.minlength"
+                                              th:text="#{field.maxlength(256)}">Maximum length required is 256</span>
+                                        <span ng-show="myForm.orgname.$invalid"
+                                              th:text="#{field.invalid}">This field is invalid.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Form buttons -->
+                        <div class="row">
+                            <div class="form-actions floatRight">
+                                <input id="sendFormButton"
+                                       type="submit"
+                                       th:attr="value='{{!ctrl.currentOrganization.name ? &quot;' + #{create} + '&quot; : &quot;' + #{update} + '&quot;}}'"
+                                       class="btn btn-primary btn-sm" ng-disabled="myForm.$invalid"/>
+                                <button type="button" ng-click="ctrl.reset()" 
+                                        class="btn btn-warning btn-sm"
+                                        ng-disabled="myForm.$pristine"
+                                        th:text="#{reset}">Reset Form</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <!-- List of items -->
+                <div class="panel-heading">
+                    <span class="lead"
+                          th:text="#{organizations.list}">List of Organizations </span>
+                </div>
+                <div class="tablecontainer">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th th:text="#{name}">Name</th>
+                                <th width="20%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="org in ctrl.organizations| orderBy:'name'">
+                                <td><span ng-bind="org.name"></span></td>
+                                <td>
+                                    <button type="button" ng-click="ctrl.edit(org.name)" 
+                                            class="btn btn-success custom-width"
+                                            style=" width: 120px !important;"
+                                            th:text="#{edit}">Edit</button> 
+                                    <button type="button" 
+                                            ng-click = "ctrl.showConfirmDialogThenDelete(org.name)"
+                                            class="btn btn-danger custom-width"                                           
+                                            th:text="#{remove}">Remove</button> 
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script th:src="@{/js/app.js}"></script>
+        <script th:src="@{/js/organization/service.js}"></script>
+        <script th:src="@{/js/organization/controller.js}"></script>
+        <link rel="stylesheet" type="text/css" media="screen, projection"
+              th:href="@{/css/lib/jquery-ui.css}"/>
+    </body>
+</html>
